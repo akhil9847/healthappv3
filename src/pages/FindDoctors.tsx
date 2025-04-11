@@ -198,22 +198,109 @@
 
 // export default FindDoctors;
 
-import React from 'react';
+// import React from 'react';
+// import { mockDoctors } from '@/data/mockDoctors';
+// import DoctorCard from '@/components/DoctorCard';
+
+// const FindDoctors: React.FC = () => {
+//   return (
+//     <div className="p-4">
+//       <h2 className="text-2xl font-semibold mb-4">Find Doctors</h2>
+//       <div>
+//         {mockDoctors.map((doctor) => (
+//           <DoctorCard key={doctor.id} doctor={doctor} />
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default FindDoctors;
+
+
+import React, { useState } from 'react';
 import { mockDoctors } from '@/data/mockDoctors';
 import DoctorCard from '@/components/DoctorCard';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 const FindDoctors: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [specialization, setSpecialization] = useState('');
+
+  const filteredDoctors = mockDoctors.filter((doctor) => {
+    const matchesName = doctor.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSpecialization =
+      specialization === '' || doctor.specialization === specialization;
+    return matchesName && matchesSpecialization;
+  });
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSpecialization('');
+  };
+
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-semibold mb-4">Find Doctors</h2>
-      <div>
-        {mockDoctors.map((doctor) => (
-          <DoctorCard key={doctor.id} doctor={doctor} />
-        ))}
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+
+      <main className="flex-1 bg-gradient-to-b from-blue-50 to-white py-8 px-4 md:px-8">
+        <div className="container mx-auto max-w-5xl">
+          <h1 className="text-3xl font-bold text-blue-700">Find Doctors</h1>
+          <p className="text-gray-600 mt-2 mb-6">
+            Connect with the best healthcare professionals
+          </p>
+
+          {/* Search & Filter */}
+          <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <input
+              type="text"
+              placeholder="Search doctors by name"
+              className="flex-1 px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <select
+              className="w-full md:w-60 px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500"
+              value={specialization}
+              onChange={(e) => setSpecialization(e.target.value)}
+            >
+              <option value="">All Specializations</option>
+              <option value="Cardiologist">Cardiologist</option>
+              <option value="Dermatologist">Dermatologist</option>
+              <option value="Pediatrician">Pediatrician</option>
+              <option value="General">General Physician</option>
+              {/* Add more as needed */}
+            </select>
+          </div>
+
+          {/* Doctors List or Empty State */}
+          {filteredDoctors.length === 0 ? (
+            <div className="text-center py-12 text-gray-600">
+              <p className="text-lg font-medium">No doctors found</p>
+              <p className="text-sm mt-1 mb-4">No doctors available at the moment</p>
+              <button
+                onClick={handleClearFilters}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Clear Filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+              {filteredDoctors.map((doctor) => (
+                <DoctorCard key={doctor.id} doctor={doctor} />
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 };
 
 export default FindDoctors;
+
 
